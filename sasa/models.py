@@ -16,7 +16,7 @@ class FormServicos (models.Model):
     servico = models.ForeignKey(Servicos, on_delete= models.CASCADE)
     detalhes = models.TextField()
     data = models.DateField()
-    aceita = models.BooleanField(default=None, null=True)  # None para representar um estado inicial
+    aceita = models.BooleanField(default=None, null=True)  
 
     def __str__(self):
         status = "Aceita" if self.aceita else "Negada" if self.aceita is False else "Pendente"
