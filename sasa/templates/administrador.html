@@ -2,14 +2,35 @@
 {% block content %}
 <header class="masthead">
     <div class="container">
-        <div class="masthead-subheading">Bem vindo(a), Adm!</div>
-        <div class="masthead-heading text-uppercase text-primary">Administração</div>
+        <div class="masthead-subheading">Bem vindo administrador!</div>
     </div>
 </header>
 <body>
     <div class="row">
         <div>
             <div class="card">
+                <div class="card-header">
+                    <h4 class="text-center">Pesquisa</h4>
+                </div>
+                <form method="get" class="row g-3 justify-content-center">
+                    <div class="col-md-3">
+                        <label for="id_nome" class="form-label">Nome</label>
+                        {{ filter.form.nome }}
+                    </div>
+                    <div class="col-md-3">
+                        <label for="id_servico" class="form-label">Serviço</label>
+                        {{ filter.form.servico }}
+                    </div>
+                    <div class="col-md-3">
+                        <label for="id_data" class="form-label">Data</label>
+                        {{ filter.form.data}}
+                    </div>
+                    <div class="justify-content-center col-md-4 d-flex ">
+                        <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                    </div>
+                </form>
+                <hr>
+                <h2 class="text-center">Resultados</h2>
                 <div class="card-header">
                     <h4 class="text-center text-primary">Solicitações Pendentes</h4>
                 </div>

@@ -1,13 +1,46 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import *
 from .forms import *
-# Create your views here.
+from django_filters import FilterSet, DateFilter, CharFilter, ModelChoiceFilter
+from django_filters.views import FilterView
 
-def pedidos(request):
+class FormServicosFilter(FilterSet):
+    nome = CharFilter(lookup_expr='icontains', label='Nome',
+                      widget=forms.TextInput(
+            attrs={
+                'class': 'form-control',  
+            }
+        ),
+    )
+    data = DateFilter(field_name='data', lookup_expr='exact', label='Data',
+                       widget=forms.DateInput(
+            attrs={
+                'type': 'date',  
+                'class': 'form-control', 
+            }
+        ),
+    )
+    servico = ModelChoiceFilter(queryset=Servicos.objects.all(), label='Serviço', 
+                                widget=forms.Select(
+            attrs={
+                'class': 'form-control', 
+            }
+        ),
+    )
+
+    class Meta:
+        model = FormServicos
+        fields = ['nome', 'servico', 'data']
+
+class FormServicosListView(FilterView):
+    model = FormServicos
+    filtersetclass = FormServicosFilter
+
+def pedidos(request): #READ
     form = FormServicos.objects.all()
     return render(request, 'pedidos.html', context = {'form': form})
 
-def cadastrar(request):
+def cadastrar(request): #CREATE
     if request.method == 'POST':
         form = formulario(request.POST, request.FILES)
         if form.is_valid():
@@ -22,15 +55,21 @@ def cadastrar(request):
     return render(request, 'contato.html', context)
     
 def administrador(request):
-    pendentes = FormServicos.objects.filter(aceita=None)  # Solicitações pendentes
-    aceitas = FormServicos.objects.filter(aceita=True)    # Solicitações aceitas
-    recusadas = FormServicos.objects.filter(aceita=False)
-    return render(request, 'administrador.html', context={'pendentes': pendentes, 'aceitas': aceitas, 'recusadas': recusadas})
+    
+    filter = FormServicosFilter(request.GET, queryset=FormServicos.objects.all())
+
+    filtered_queryset = filter.qs
+    
+    pendentes = filtered_queryset.filter(aceita=None)  
+    aceitas = filtered_queryset.filter(aceita=True)    
+    recusadas = filtered_queryset.filter(aceita=False)
+
+    return render(request, 'administrador.html', context={'filter': filter, 'pendentes': pendentes, 'aceitas': aceitas, 'recusadas': recusadas})
 
 def inicio(request):
     return render(request, 'index.html')
 
-def editar(request, id):
+def editar(request, id): #UPDATE
     formularios = FormServicos.objects.get(id=id)
     
     if request.method == "POST":
@@ -43,19 +82,20 @@ def editar(request, id):
     
     return render(request, 'contato.html', context={'form': form})
 
-def deletar(request, id):
+def deletar(request, id): #DELETE
     form = FormServicos.objects.get(id=id)
     form.delete()
     return redirect('pedidos')
 
 def aceitar_servico(request, id):
     servico = get_object_or_404(FormServicos, pk=id)
-    servico.aceita = True  # Marca como aceita
+    servico.aceita = True  
     servico.save()
-    return redirect('administrador')  # Redireciona para a página adequada
+    return redirect('administrador')  
 
 def recusar_servico(request, id):
     servico = get_object_or_404(FormServicos, pk=id)
-    servico.aceita = False  # Marca como recusada
+    servico.aceita = False  
     servico.save()
     return redirect('administrador')
+
