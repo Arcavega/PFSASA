@@ -25,6 +25,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = 'sasa.UserBlog'
+LOGIN_URL = 'sasa:login'
+LOGOUT_REDIRECT_URL = 'sasa:login'
 
 # Application definition
 

@@ -1,5 +1,9 @@
 from django.contrib import admin
 from .models import *
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from .models import UserBlog
+
 
 @admin.register(Servicos)
 class ServicosAdmin(admin.ModelAdmin):
@@ -12,3 +16,10 @@ class FormServicosAdmin(admin.ModelAdmin):
     list_filter = ('servico', 'data', 'aceita')
     search_fields = ('nome', 'email', 'detalhes')
     ordering = ('-data',)
+
+class UserBlogAdmin(UserAdmin):
+    fieldsets = UserAdmin.fieldsets + (
+        (None, {'fields': ('cpf', 'nome_cidade', 'nome_mae', 'endereco', 'nome_bairro')}),
+    )
+
+admin.site.register(UserBlog, UserBlogAdmin)

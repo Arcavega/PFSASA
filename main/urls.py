@@ -20,17 +20,20 @@ from django.contrib import admin
 from django.urls import path
 from sasa.views import *
 
+#app_name = 'usuarios'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('contato/', cadastrar, name='contato'),
     path('adm/', administrador, name='administrador'),
-    path('', inicio),
+    path('', inicio, name= 'index'),
     path('pedidos/', pedidos, name='pedidos'),
     path('editar/<int:id>', editar, name='editar'),
     path('deletar/<int:id>', deletar, name='deletar'),
     path('aceitar/<int:id>', aceitar_servico, name='aceitar'),
     path('recusar/<int:id>', recusar_servico, name='recusar'),
-
+    path('login/', login_view, name='login'),
+    path('logout/', logout_view, name='logout'),
+    path('register/', register, name='cadastrar_usuario'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

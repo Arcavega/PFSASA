@@ -3,6 +3,10 @@ from .models import *
 from .forms import *
 from django_filters import FilterSet, DateFilter, CharFilter, ModelChoiceFilter
 from django_filters.views import FilterView
+from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import UserBlogCreationForm
 
 class FormServicosFilter(FilterSet):
     nome = CharFilter(lookup_expr='icontains', label='Nome',
@@ -99,3 +103,33 @@ def recusar_servico(request, id):
     servico.save()
     return redirect('administrador')
 
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('index')
+        else:
+            messages.error(request, 'Usuário ou senha inválidos.')
+
+    return render(request, 'login.html')
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+def register(request):
+    if request.method == 'POST':
+        form = UserBlogCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Cadastro realizado com sucesso! Você já pode fazer login.')
+            return redirect('login')
+    else:
+        form = UserBlogCreationForm()
+
+    return render(request, 'register.html', {'form': form})
